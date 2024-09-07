@@ -58,6 +58,7 @@ const CardCustomer = () => {
                                 <Label>Senha</Label>
                                 <Input 
                                     id="password" 
+                                    type="password"
                                     placeholder="Digite a sua senha" 
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
