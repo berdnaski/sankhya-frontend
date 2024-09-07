@@ -7,7 +7,7 @@ import { useParams } from "react-router-dom";
 import { api } from "@/api/axios";
 
 const CreateAppointment = () => {
-    const { customerId } = useParams(); // Obtém o ID do cliente da URL
+    const { customerId } = useParams();
     const [description, setDescription] = useState('');
     const [date, setDate] = useState('');
 
