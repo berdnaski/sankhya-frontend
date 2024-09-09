@@ -1,13 +1,18 @@
 import { createBrowserRouter } from "react-router-dom";
-import CardCustomer from "./pages/customer/card-customer";
 import CreateAppointment from "./pages/appointments/create-appointment";
+import RegisterCustomer from "./pages/customer/create-customer";
+import LoginCustomer from "./pages/customer/login-customer";
 
 const router = createBrowserRouter([
   {
     children: [
       {
         path: "/",
-        element: <CardCustomer />
+        element: <RegisterCustomer />
+      },
+      {
+        path: "/login",
+        element: <LoginCustomer />
       },
       {
         path: "/customers/:customerId/appointments",

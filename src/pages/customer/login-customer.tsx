@@ -4,47 +4,37 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useRegister } from "@/lib/hooks/useAuth";
+import { useLogin } from "@/lib/hooks/useAuth";
 
-const CardCustomer = () => {
-    const [name, setName] = useState('');
+const LoginCustomer = () => {
     const [phone, setPhone] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
-    const { mutate: register, isPending, isError, error } = useRegister(); 
+    const { mutate: login, isPending, isError, error } = useLogin();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        register({ name, phone, password }, {
+        login({ phone, password }, {
             onSuccess: (data) => {
                 navigate(`/customers/${data.phone}/appointments`);
             },
             onError: (error) => {
-                console.error('Erro ao cadastrar cliente:', error);
+                console.error('Erro ao fazer login:', error);
             }
         });
     };
 
-    return ( 
+    return (
         <div className="h-screen justify-center flex items-center">
             <Card className="w-[350px] lg:w-[550px] mx-auto">
                 <CardHeader>
-                    <CardTitle className="lg:text-3xl font-semibold">Cadastrar-se como cliente</CardTitle>
+                    <CardTitle className="lg:text-3xl font-semibold">Entrar como cliente</CardTitle>
                 </CardHeader>
 
                 <CardContent>
                     <form onSubmit={handleSubmit}>
                         <div className="flex flex-col gap-4">
-                            <div className="gap-2 flex flex-col">
-                                <Label>Nome</Label>
-                                <Input 
-                                    id="name" 
-                                    placeholder="Digite o seu nome"
-                                    value={name}
-                                    onChange={(e) => setName(e.target.value)}
-                                />
-                            </div>
                             <div className="gap-2 flex flex-col">
                                 <Label>Telefone</Label>
                                 <Input 
@@ -71,7 +61,7 @@ const CardCustomer = () => {
                             type="submit"
                             disabled={isPending}
                         >
-                            {isPending ? 'Cadastrando...' : 'Cadastrar'}
+                            {isPending ? 'Entrando...' : 'Entrar'}
                         </Button>
                         {isError && (
                             <p className="text-red-500 mt-2">{error.message}</p>
@@ -83,4 +73,4 @@ const CardCustomer = () => {
     );
 }
 
-export default CardCustomer;
+export default LoginCustomer;
