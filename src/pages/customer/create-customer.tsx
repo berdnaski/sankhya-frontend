@@ -26,9 +26,9 @@ const RegisterCustomer = () => {
         e.preventDefault();
 
         try {
-            const data = await mutate({ name, phone, password }); 
+            await mutate({ name, phone, password }); 
             toast.success('Cadastro realizado com sucesso!');
-            navigate(`/customers/${data.id}/appointments/create`); 
+            navigate('/login');
         } catch {
             toast.error('Ocorreu um erro ao realizar o cadastro.');
         }

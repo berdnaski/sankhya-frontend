@@ -10,7 +10,7 @@ export const useListAppointments = (customerId: string) => {
     });
 
     return {
-        data: query.data as Appointment[] | undefined,
+        data: query.data as Appointment[],
         isLoading: query.isLoading,
         isError: query.isError,
         error: query.error,

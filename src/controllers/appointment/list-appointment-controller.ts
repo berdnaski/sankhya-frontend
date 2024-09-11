@@ -3,8 +3,8 @@ import { z } from "zod";
 
 const appointmentSchema = z.object({
     id: z.string().uuid(),
-    title: z.string(),
-    date: z.string(),
+    description: z.string(),
+    appointmentDate: z.string(),
 });
 
 export type Appointment = z.infer<typeof appointmentSchema>;
