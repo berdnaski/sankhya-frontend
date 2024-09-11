@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useRegister } from "@/lib/hooks/useAuth";
+import { useRegister } from "@/lib/hooks/useRegister";
 
 const RegisterCustomer = () => {
     const [name, setName] = useState('');
@@ -15,6 +15,8 @@ const RegisterCustomer = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        console.log({ name, phone, password })
 
         register({ name, phone, password }, {
             onSuccess: (data) => {

@@ -11,6 +11,7 @@ export function useRegister() {
 
   const mutation = useMutation({
     mutationFn: async (userData: RegisterUser) => {
+      console.log('User Data being sent> ', userData);
       const { data } = await api.post<AuthResponse>('/auth/register', userData);
       return data;
     },
