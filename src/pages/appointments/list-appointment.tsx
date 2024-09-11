@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Trash, Edit, Loader } from "lucide-react";
@@ -7,6 +7,7 @@ import { useListAppointments } from "@/lib/hooks/services/appointments/use-list-
 const ListAppointments = () => {
     const { customerId } = useParams<{ customerId: string }>();
     const { data: appointments, isLoading, isError, error } = useListAppointments(customerId || '');
+    const navigate = useNavigate();
 
     if (isLoading) {
         return (
@@ -26,8 +27,18 @@ const ListAppointments = () => {
 
     if (!appointments || appointments.length === 0) {
         return (
-            <div className="flex justify-center items-center h-screen">
-                <p>Sem compromissos agendados.</p>
+            <div className="flex justify-center items-center h-screen flex-col gap-2">
+              <p>Sem compromissos agendados.</p>
+              <Button
+                variant="outline"
+                aria-label="Adicionar compromisso"
+                onClick={() => {
+                  const path = window.location.pathname;
+                  navigate(`${path}/create`);
+                }}
+              >
+                Adicionar compromisso
+              </Button>
             </div>
         );
     }
@@ -43,8 +54,8 @@ const ListAppointments = () => {
                         {appointments.map((appointment) => (
                             <li key={appointment.id} className="flex justify-between items-center border-b pb-2">
                                 <div>
-                                    <h3 className="text-lg font-medium">{appointment.title}</h3>
-                                    <p className="text-sm text-gray-500">{appointment.date}</p>
+                                    <h3 className="text-lg font-medium">{appointment.description}</h3>
+                                    <p className="text-sm text-gray-500">{appointment.appointmentDate}</p>
                                 </div>
                                 <div className="flex space-x-2">
                                     <Button variant="outline" aria-label="Excluir compromisso">
