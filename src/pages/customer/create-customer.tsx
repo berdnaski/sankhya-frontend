@@ -1,35 +1,41 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useRegister } from "@/lib/hooks/useRegister";
+import { useRegister } from "@/lib/hooks/useRegister"; 
+import { toast } from 'sonner';
 
 const RegisterCustomer = () => {
+    const navigate = useNavigate();
+    const { mutate, isPending, isError, error } = useRegister();
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
     const [password, setPassword] = useState('');
-    const navigate = useNavigate();
-    const { mutate: register, isPending, isError, error } = useRegister(); 
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if(token) {
+            localStorage.removeItem('token');
+            navigate('/login');
+        }
+    }, [navigate]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        console.log({ name, phone, password })
-
-        register({ name, phone, password }, {
-            onSuccess: (data) => {
-                navigate(`/customers/${data.phone}/appointments`);
-            },
-            onError: (error) => {
-                console.error('Erro ao cadastrar cliente:', error);
-            }
-        });
+        try {
+            const data = await mutate({ name, phone, password }); 
+            toast.success('Cadastro realizado com sucesso!');
+            navigate(`/customers/${data.id}/appointments/create`); 
+        } catch {
+            toast.error('Ocorreu um erro ao realizar o cadastro.');
+        }
     };
 
-    return ( 
-        <div className="h-screen justify-center flex items-center">
+    return (
+        <div className="h-screen flex justify-center items-center">
             <Card className="w-[350px] lg:w-[550px] mx-auto">
                 <CardHeader>
                     <CardTitle className="lg:text-3xl font-semibold">Cadastrar-se como cliente</CardTitle>
@@ -38,7 +44,7 @@ const RegisterCustomer = () => {
                 <CardContent>
                     <form onSubmit={handleSubmit}>
                         <div className="flex flex-col gap-4">
-                            <div className="gap-2 flex flex-col">
+                            <div className="flex flex-col gap-2">
                                 <Label>Nome</Label>
                                 <Input 
                                     id="name" 
@@ -47,7 +53,7 @@ const RegisterCustomer = () => {
                                     onChange={(e) => setName(e.target.value)}
                                 />
                             </div>
-                            <div className="gap-2 flex flex-col">
+                            <div className="flex flex-col gap-2">
                                 <Label>Telefone</Label>
                                 <Input 
                                     id="phone" 
@@ -56,7 +62,7 @@ const RegisterCustomer = () => {
                                     onChange={(e) => setPhone(e.target.value)}
                                 />
                             </div>
-                            <div className="gap-2 flex flex-col">
+                            <div className="flex flex-col gap-2">
                                 <Label>Senha</Label>
                                 <Input 
                                     id="password" 

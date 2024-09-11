@@ -1,10 +1,10 @@
-export interface RegisterUser {
+export interface RegisterCustomer {
     name: string;
     phone: string;
     password: string;
   }
   
-  export interface LoginUser {
+  export interface LoginCustomer {
     phone: string;
     password: string;
   }
@@ -13,5 +13,12 @@ export interface RegisterUser {
     name: string;
     phone: string;
     token: string;
+    id: string;
+  }
+
+  export interface CustomerProps {
+    uid: string;
+    name: string;
+    phone: string;
   }
   

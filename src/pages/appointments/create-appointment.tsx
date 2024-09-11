@@ -1,32 +1,42 @@
+import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
-import { useParams } from "react-router-dom";
-import { api } from "@/api/axios";
+import { useNavigate, useParams } from 'react-router-dom';
+import { useCreateAppointment } from '@/lib/hooks/services/appointments/use-create-appointment';
+import { useStorage } from '@/lib/hooks/useStorage';
 
 const CreateAppointment = () => {
-    const { customerId } = useParams();
-    const [description, setDescription] = useState('');
-    const [date, setDate] = useState('');
+    const { customerId } = useParams(); 
+    const navigate = useNavigate();
+    const { mutate, isPending, isError, isSuccess, error } = useCreateAppointment();
+    const { removeStorageItem } = useStorage();
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const [description, setDescription] = useState('');
+    const [appointmentDate, setAppointmentDate] = useState('');
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        try {
-            const appointmentData = {
-                description,
-                appointmentDate: date
-            };
-            const res = await api.post(`/customers/${customerId}/appointments`, appointmentData);
-            console.log('Compromisso criado com sucesso:', res.data);
-
-            setDescription('');
-            setDate('');
-        } catch {
-            console.log('Erro ao criar compromisso:');
+        if (!customerId) {
+            console.error('Customer ID is required');
+            return;
         }
+
+        mutate({ customerId, appointment: { description, appointmentDate } }, {
+            onSuccess: () => {
+                navigate(`/customers/${customerId}/appointments`);
+            },
+            onError: (error) => {
+                console.error('Failed to create appointment:', error);
+            }
+        });
+    };
+
+    const handleLogout = () => {
+        removeStorageItem('auth-token');
+        navigate('/login');
     };
 
     return (
@@ -42,29 +52,39 @@ const CreateAppointment = () => {
                                 <Label htmlFor="description">Descrição</Label>
                                 <Input
                                     id="description"
-                                    placeholder="Digite a descrição do compromisso"
                                     value={description}
                                     onChange={(e) => setDescription(e.target.value)}
+                                    placeholder="Digite a descrição do compromisso"
                                 />
                             </div>
                             <div className="flex flex-col">
-                                <Label htmlFor="date">Data</Label>
+                                <Label htmlFor="appointmentDate">Data</Label>
                                 <Input
-                                    id="date"
+                                    id="appointmentDate"
                                     type="datetime-local"
-                                    value={date}
-                                    onChange={(e) => setDate(e.target.value)}
+                                    value={appointmentDate}
+                                    onChange={(e) => setAppointmentDate(e.target.value)}
                                 />
                             </div>
                             <Button
                                 variant="outline"
                                 className="w-full mt-4"
                                 type="submit"
+                                disabled={isPending}
                             >
-                                Criar Compromisso
+                                {isPending ? 'Criando...' : 'Criar Compromisso'}
                             </Button>
+                            {isError && <p className="text-red-500 mt-2">{error?.message}</p>}
+                            {isSuccess && <p className="text-green-500 mt-2">Compromisso criado com sucesso!</p>}
                         </div>
                     </form>
+                    <Button
+                        variant="outline"
+                        className="w-full mt-4"
+                        onClick={handleLogout}
+                    >
+                        Logout
+                    </Button>
                 </CardContent>
             </Card>
         </div>

@@ -1,32 +1,30 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useLogin } from "@/lib/hooks/useRegister";
+import { useLoginService } from "@/lib/hooks/services/customer/useLoginService";
+import { toast } from "sonner";
 
 const LoginCustomer = () => {
+    const { execute, isLoading } = useLoginService(); 
     const [phone, setPhone] = useState('');
     const [password, setPassword] = useState('');
-    const navigate = useNavigate();
-    const { mutate: login, isPending, isError, error } = useLogin();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        login({ phone, password }, {
-            onSuccess: (data) => {
-                navigate(`/customers/${data.phone}/appointments`);
-            },
-            onError: (error) => {
-                console.error('Erro ao fazer login:', error);
-            }
-        });
+        try {
+            await execute({ phone, password });
+            toast.success("Login realizado com sucesso!");
+        } catch (error) {
+            console.error("Login error:", error);
+            toast.error("Ocorreu um erro ao realizar o login.");
+        }
     };
 
     return (
-        <div className="h-screen justify-center flex items-center">
+        <div className="h-screen flex items-center justify-center">
             <Card className="w-[350px] lg:w-[550px] mx-auto">
                 <CardHeader>
                     <CardTitle className="lg:text-3xl font-semibold">Entrar como cliente</CardTitle>
@@ -36,7 +34,7 @@ const LoginCustomer = () => {
                     <form onSubmit={handleSubmit}>
                         <div className="flex flex-col gap-4">
                             <div className="gap-2 flex flex-col">
-                                <Label>Telefone</Label>
+                                <Label htmlFor="phone">Telefone</Label>
                                 <Input 
                                     id="phone" 
                                     placeholder="Digite o seu telefone" 
@@ -45,7 +43,7 @@ const LoginCustomer = () => {
                                 />
                             </div>
                             <div className="gap-2 flex flex-col">
-                                <Label>Senha</Label>
+                                <Label htmlFor="password">Senha</Label>
                                 <Input 
                                     id="password" 
                                     type="password"
@@ -59,18 +57,15 @@ const LoginCustomer = () => {
                             variant="outline" 
                             className="mt-4 flex w-full"
                             type="submit"
-                            disabled={isPending}
+                            disabled={isLoading} // Use isLoading para o estado de carregamento
                         >
-                            {isPending ? 'Entrando...' : 'Entrar'}
+                            {isLoading ? 'Entrando...' : 'Entrar'}
                         </Button>
-                        {isError && (
-                            <p className="text-red-500 mt-2">{error.message}</p>
-                        )}
                     </form>
                 </CardContent>
             </Card>
         </div>
     );
-}
+};
 
 export default LoginCustomer;
